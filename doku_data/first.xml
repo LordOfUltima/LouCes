@@ -18,6 +18,7 @@ Es kommt entweder eine Bestätigung oder eine Meldung, dass dort schon jemand an
 [b]Prüfen ob Siedelplatz noch frei[/b]: Siedeln 123:123
 [b]Siedlungsnachrichten abschalten[/b]: !Siedeln OFF
 
+Geht auch einfacher mit folgendem Script: [url]http://userscripts.org/scripts/show/158526[/url]
 [u]Funktionsweise[/u]:
 Check (Prüfung ob noch frei),
 Siedeln (trägt ein, dass ihr dort siedelt),
@@ -25,7 +26,7 @@ Unclaim (löscht den Siedlungseintrag, falls ihr dort doch nicht siedeln wollt)
 
 Bis eine Antwort von ##BOTNAME## kommt kann es manchmal etwas dauern, da ##BOTNAME## jede Stunde die Welt einmal scannt um seine Datenbank aufzubauen.
 
-Geht auch einfacher mit folgendem Script: [url]http://userscripts.org/scripts/show/158526[/url]
+
 
 LG Robin
 ]]>
