@@ -12,7 +12,7 @@ hier mal die wichtigsten Befehle für ##BOTNAME##:
 
 [b]Siedelplatz reservieren[/b]: !Siedeln 123:123
 [b]Gesetzlose Stadt reservieren[/b]: !LL 123:123
-Es kommt entweder eine Bestätigung oder eine Meldung dass dort schon jemand anders siedelt.
+Es kommt entweder eine Bestätigung oder eine Meldung, dass dort schon jemand anders siedelt.
 
 [b]eigene Reservierung löschen[/b]: !Siedeln DEL 123:123
 [b]Prüfen ob Siedelplatz noch frei[/b]: Siedeln 123:123
