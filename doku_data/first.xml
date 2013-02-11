@@ -4,7 +4,7 @@
     <title>Erste Schritte</title>
     <author>Grodel</author>
     <date>11.02.2013</date>
-    <version>1.0</version>
+    <version>1.1</version>
     <lang>de</lang>
     <entry id="1"><![CDATA[Hi Leute,
 
@@ -19,14 +19,13 @@ Es kommt entweder eine Bestätigung oder eine Meldung, dass dort schon jemand an
 [b]Siedlungsnachrichten abschalten[/b]: !Siedeln OFF
 
 Geht auch einfacher mit folgendem Script: [url]http://userscripts.org/scripts/show/158526[/url]
+
 [u]Funktionsweise[/u]:
 Check (Prüfung ob noch frei),
 Siedeln (trägt ein, dass ihr dort siedelt),
 Unclaim (löscht den Siedlungseintrag, falls ihr dort doch nicht siedeln wollt)
 
 Bis eine Antwort von ##BOTNAME## kommt kann es manchmal etwas dauern, da ##BOTNAME## jede Stunde die Welt einmal scannt um seine Datenbank aufzubauen.
-
-
 
 LG Robin
 ]]>
