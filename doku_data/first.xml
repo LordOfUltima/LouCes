@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<doku>
+    <key>first</key>
+    <title>Erste Schritte</title>
+    <author>Grodel</author>
+    <date>11.02.2013</date>
+    <version>1.0</version>
+    <lang>de</lang>
+    <entry id="1"><![CDATA[Hi Leute,
+
+hier mal die wichtigsten Befehle für ##BOTNAME##:
+
+[b]Siedelplatz reservieren[/b]: !Siedeln 123:123
+[b]Gesetzlose Stadt reservieren[/b]: !LL 123:123
+Es kommt entweder eine Bestätigung oder eine Meldung dass dort schon jemand anders siedelt.
+
+[b]eigene Reservierung löschen[/b]: !Siedeln DEL 123:123
+[b]Prüfen ob Siedelplatz noch frei[/b]: Siedeln 123:123
+[b]Siedlungsnachrichten abschalten[/b]: !Siedeln OFF
+
+[u]Funktionsweise[/u]:
+Check (Prüfung ob noch frei),
+Siedeln (trägt ein, dass ihr dort siedelt),
+Unclaim (löscht den Siedlungseintrag, falls ihr dort doch nicht siedeln wollt)
+
+Bis eine Antwort von ##BOTNAME## kommt kann es manchmal etwas dauern, da ##BOTNAME## jede Stunde die Welt einmal scannt um seine Datenbank aufzubauen.
+
+Geht auch einfacher mit folgendem Script: [url]http://userscripts.org/scripts/show/158526[/url]
+
+LG Robin
+]]>
+    </entry>
+</doku>
