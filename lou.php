@@ -52,7 +52,12 @@ class JSON {
       }
     } catch (JsonDecodeException $e){
       $line = trim(date("[d/m @ H:i:s]") . $e->getMessage()) . "\n";
-      $line = trim("Debug:" . $json) . "\n";        
+      if (preg_match('/<html[^>]{0,}>/i', $json)) {
+          $message = preg_match('/<title>(.*)<\/title>/i', $json);
+          $line = trim("Error: " . $message[1]) . "\n";
+      } else {
+          $line = trim("Debug:\n-->\n" . $json) . "\n<--\n";
+      }   
       error_log($line, 3, LOG_FILE);
       return false;
     }
@@ -226,7 +231,7 @@ class LoU implements SplSubject {
     curl_close($this->handle);
     return $this->doOpenGame($debug);
   }
-
+	
   private function disconnect($debug = false) {
     $_logout_url = 'https://www.lordofultima.com/'.BOT_LANG.'/user/logout';
     $_referer_url = 'https://www.lordofultima.com/'.BOT_LANG.'/game';      
@@ -301,7 +306,9 @@ class LoU implements SplSubject {
   }
   
   public function postDebug($endpoint, $data = array(), $noerror = false) {
-    return $this->post($endpoint, $data, $noerror, true);
+    $result = $this->post($endpoint, $data, $noerror, true);
+    print_r($result);
+    return $result;
   }
   
   public function get($endpoint, $data = array(), $noerror = false, $debug = false) {
@@ -362,7 +369,7 @@ class LoU implements SplSubject {
     }
     return($this->stack);
   }
-
+	
   public function getCachedDebug($endpoint, $data = array(), $noerror = false, $expire = 180) {
     return $this->getCached($endpoint, $data, $noerror, $expire, true);
   }
@@ -389,7 +396,7 @@ class LoU implements SplSubject {
     }
     return($this->stack);
   }
-
+	
   public function getMultiDebug($endpoint, $multi = array()) {
     return $this->getMulti($endpoint, $multi, true);
   }
@@ -446,7 +453,7 @@ class LoU implements SplSubject {
     }
     return($this->stack);
   }
-
+	
   public function getMultiCachedDebug($endpoint, $multi = array(), $expire = 180) {
     return $this->getMultiCached($endpoint, $multi, $expire, true);
   }
@@ -734,6 +741,14 @@ class LoU implements SplSubject {
     $this->getMultiCached("GetPublicCityInfo", $d);
   }
   
+	public function setAllianceAllowOnline($allow) {
+    $d = array(
+        "session" => $this->session,
+        "b"       => (boolean)$allow
+    );
+    $this->post("setAllianceAllowOnline", $d);
+  }
+	
   public function doPlayerCount($continent, $type = 0) {
     $d = array(
         "session"    => $this->session,
@@ -946,6 +961,11 @@ class LoU implements SplSubject {
     return preg_match('/^([01]?[0-9]|2[0-3]):([0-5][0-9]):?([0-5][0-9])?$/', strtolower($string));
   }
   
+  public static function is_string_duration($string) {
+    // check if duration <= 59:59:59
+    return preg_match('/^([0-5][0-9]):([0-5][0-9]):?([0-5][0-9])?$/', strtolower($string));
+  }
+  
   public static function get_duration_by_seconds($sec) {
     $hours = 0;
     $min = intval($sec / 60);
@@ -954,11 +974,6 @@ class LoU implements SplSubject {
       $min = $min % 60;
     }
     return str_pad($hours, 2 ,'0', STR_PAD_LEFT) . ":" . str_pad($min, 2 ,'0', STR_PAD_LEFT);
-  }
-  
-  public static function is_string_duration($string) {
-    // check if duration <= 59:59
-    return preg_match('/^[0-5][0-9]:[0-5][0-9][0-9]$/', strtolower($string));
   }
   
   public static function get_time_by_string($string) {

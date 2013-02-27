@@ -83,18 +83,28 @@ class executeThread extends PHP_Fork {
   }
 
   public function run() {
+    global $redis;
+    $redis = $redis->getInstance();
     return call_user_func_array(array($this, 'worker'), func_get_args());
   }
   
   public function __call($method, $args) {
+		global $bot;
     if ($this->{$method} instanceof Closure) {
-      return call_user_func_array($this->{$method}, $args);
+      try {
+        $bot->debug("PHP_Fork child::command ('{$method}' on '{$this->getName()}')");  
+        return call_user_func_array($this->{$method}, $args);
+      } catch (PHP_ForkException $e){
+        $bot->debug("PHP_Fork child::error ('{$method}' on '{$this->getName()}') : '" . $e->getMessage() . "'");  
+        return false;
+      }
     } else {
       try {
+        $bot->debug("PHP_Fork parent::command ('{$method}' on '{$this->getName()}')");  
         return parent::__call($method, $args);
       } catch (PHP_ForkException $e){
-        $line = trim(date("[d/m @ H:i:s]") . "PHP_Fork command ('{$method}' on '{$this->getName()}') Error: " . $e->getMessage()) . "\n";  
-        error_log($line, 3, LOG_FILE);
+        $bot->debug("PHP_Fork parent::error ('{$method}' on '{$this->getName()}') : '" . $e->getMessage() . "'");
+				
         return false;
       }
     }
@@ -157,9 +167,9 @@ class Category implements SplObserver {
   
   private function setRules() {
     $this->timeout = intval(@$this->rules['timeout']);
-    $this->fuzzyit = (@$this->rules['fuzzyit']) ? true : false;
+    $this->fuzzyit = (@$this->rules['fuzzy']) ? true : false;
     $this->schedule = intval(@$this->rules['schedule']);
-    $this->randomice = (@$this->rules['randomice']) ? true : false;
+    $this->randomice = (@$this->rules['humanice']) ? true : false;
     $this->spamsafe = (@$this->rules['spamsafe']) ? true : false;
     $this->dobreak = (@$this->rules['dobreak']) ? true : false;
     $this->enabled = (@$this->rules['enabled']) ? $this->rules['enabled'] : true;
@@ -249,6 +259,10 @@ class Hook implements SplSubject {
   
   public function isCommand() {
     return $this->is_command;
+  }
+  
+  public function getName() {
+    return $this->name;
   }
   
   public function callFunction($subject, $input) {
@@ -357,6 +371,7 @@ class LoU_Bot implements SplObserver {
       $this->load_hooks();
       $this->globalchat = (defined('GLOBALCHAT')) ? GLOBALCHAT : false;
       $this->lou->get_self_alliance();
+      $this->lou->setAllianceAllowOnline(true);
       while ($this->lou->isConnected(true)) {
         $slepp_until = time() + POLLTRIP;
         $event = $this->cron->check();
@@ -602,12 +617,16 @@ class LoU_Bot implements SplObserver {
               $event->callFunction($this, $input);
               if ($event->breakThis()) break;
             } else if($event instanceof executeThread) {
-              if ($events[$_key]->isRunning()) {
-                $this->debug($event->getName() . " already running with PID " . $event->getPid() . "...");
+              if ($event->isRunning()) {
+                $this->debug($event->getName() . " already running, terminate with PID " . $event->getPid() . "...");
                 break;
               }
-              $events[$_key]->start($event, $this, $input);
+              try {
+              $event->start($this, $input);
               $this->debug("Started " . $event->getName() . " with PID " . $event->getPid() . "...");
+              } catch (PHP_ForkException $e){
+                $this->debug("Start failed " . $event->getName() . " with error: '" . $e->getMessage() . "'");
+              }
               $redis->reInstance();
             }
           } }
@@ -620,17 +639,21 @@ class LoU_Bot implements SplObserver {
       $this->debug("Call".ucfirst(strtolower($input['type']))."Events ({$input['name']})".((!is_null($name)) ? " -> {$name}" : ''));
       $events = @$this->events[$input['name']];
       if (is_array($events)) { sort($events); foreach ($events as $event) {
-        if (is_null($name) || $name == $event->name) {
+        if (is_null($name) || $name == $event->getName()) {
           if($event instanceof Hook) {
             $event->callFunction($this, $input);
             if ($event->breakThis()) return;
           } else if($event instanceof executeThread) {
             if ($event->isRunning()) {
-              $this->debug($event->getName() . " already running with PID " . $event->getPid() . "...");
+              $this->debug($event->getName() . " already running, terminate with PID " . $event->getPid() . "...");
               return;
             }
-            $event->start($event, $this, $input);
+            try {
+            $event->start($this, $input);
             $this->debug("Started " . $event->getName() . " with PID " . $event->getPid() . "...");
+            } catch (PHP_ForkException $e){
+              $this->debug("Start failed " . $event->getName() . " with error: '" . $e->getMessage() . "'");
+            }
             $redis->reInstance();
           }
         }
@@ -646,7 +669,7 @@ class LoU_Bot implements SplObserver {
         $this->debug("Fire".ucfirst(strtolower($input['type']))."Hooks ({$input['channel']})".((!is_null($name)) ? " -> {$name}" : ''));
       }
       if (is_array($hooks)) foreach ($hooks as $hook) {
-        if (is_null($name) || $name == $hook->name) {
+        if (is_null($name) || $name == $hook->getName()) {
           $hook->callFunction($this, $input);
           if ($hook->breakThis()) break;
         }
@@ -806,6 +829,7 @@ class LoU_Bot implements SplObserver {
       global $redis;
       if (empty($user)) return false;
       if (!$redis->status()) return ($user == $this->owner) ? true : false;
+      if ($user == BOT_SERVICE) return true;
       $roles = $redis->hKeys("alliance:{$this->ally_id}:roles");
       sort($roles);
       $_op = array_slice($roles, 0, 3);

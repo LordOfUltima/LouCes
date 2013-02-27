@@ -30,7 +30,7 @@ define ('PHP_FORK_RETURN_METHOD', -2);
 class PHP_ForkException extends Exception{
   function __construct($strMessage, $code = 0){
     parent::__construct($strMessage, $code);
-  }
+  }  
 }
 /**
  * PHP_Fork class. Wrapper around the pcntl_fork() stuff
@@ -212,7 +212,7 @@ class PHP_Fork {
      * creating the pseudo-threads instances is very simple:
      *
      * <code>
-     *   ...
+     *   ..  
      *       $executeThread1 = new executeThread ("executeThread-1");
      *       $executeThread2 = new executeThread ("executeThread-2");
      *     ...
@@ -484,7 +484,8 @@ class PHP_Fork {
 
               if ($this->_puid != 0)
                   posix_setuid($this->_puid);
-
+									
+              $this->_running = true;
               call_user_func_array(array($this, 'run'), func_get_args());
               // Added 21/Oct/2003: destroy the child after run() execution
               // needed to avoid unuseful child processes after execution
@@ -492,7 +493,6 @@ class PHP_Fork {
           } else {
               // this is the parent
               $this->_isChild = false;
-              $this->_running = true;
               $this->_pid = $pid;
           }
         } catch (Exception $e) {
@@ -745,7 +745,8 @@ class PHP_Fork {
         $i = 0;
         do {
           $i++;
-          $this->_internal_ipc_key = @shmop_open($shm_key, "c", 0644, 10240);
+          $this->_internal_ipc_key = @shmop_open($shm_key, "a", 0666, 0);
+          if (empty($this->_internal_ipc_key)) $this->_internal_ipc_key = @shmop_open($shm_key, "c", 0644, 10240);
         } while ($this->_internal_ipc_key === false && $i <= self::SHARED_MAX_ATTEMPS);
         
         if (!$this->_internal_ipc_key) {
@@ -772,7 +773,8 @@ class PHP_Fork {
         $i = 0;
         do {
           $i++;
-          $this->_internal_sem_key = @shmop_open($sem_key, "c", 0644, 10);
+          $this->_internal_sem_key = @shmop_open($sem_key, "a", 0666, 0);
+          if (empty($this->_internal_sem_key)) $this->_internal_sem_key = @shmop_open($sem_key, "c", 0644, 10);
         } while ($this->_internal_ipc_key === false && $i <= self::SHARED_MAX_ATTEMPS);
         
         if (!$this->_internal_sem_key) {

@@ -4,11 +4,11 @@ error_reporting(E_ALL ^ E_NOTICE);
 // determine enviroment
 define('CLI', (bool) defined('STDIN'));
 // configuration
-define('BOT_EMAIL', 'your@email.com');
-define('BOT_PASSWORD', 'yourpassword');
-define('BOT_OWNER', 'YourInGameNick');
-define('BOT_SERVER', 'http://prodgameyx.lordofultima.com/123/'); // your world server!
-define('BOT_LANG','de'); // your prefered language for login
+define('BOT_EMAIL',     'your@email.com');
+define('BOT_PASSWORD',  'yourpassword');
+define('BOT_OWNER',     'YourInGameNick');
+define('BOT_SERVER',    'http://prodgameyx.lordofultima.com/123/'); // your world server!
+define('BOT_LANG',      'de'); // your prefered language for login
 // prefix for commands to the bot
 define('PRE','!');
 // time settings
@@ -21,7 +21,13 @@ setlocale(LC_ALL, 'de_DE@euro', 'de_DE', 'de', 'ge');
 // features like spam
 define('SPAMTTL', 15);
 define('POLLTRIP', 1);
-define('SETTLERTTL', 86400);
+define('CLAIMTTL', 86400); //24h
+define('SETTLERTTL', 86400); //deprecated
+define('SETTLETTL', 129600); //36h
+// extension
+define('EXTENSION_VERSION', '');
+define('EXTENSION_KEY', '');
+define('ELSE_SPIO_URL', '');
 // ignore
 define('IGNORE_PUNISHTTL', 3600);
 // stats
@@ -30,24 +36,35 @@ define('STATS_URL', 'stats.localhost');
 define('ALICETTL', 3);
 define('ALICEID', 'youralice_id'); // need an published alicebot id
 // global chat
-define('GLOABLCHAT', false);
+define('GLOBALCHAT', false);
 // fork
-define('MAXCHILDS', 5);
+define('MAXCHILDS', 8);
 // server pain barrier
 define('MAX_PARALLEL_REQUESTS', 16);
-// forums
-define('BOT_STATISTICS_FORUM', 'Stats');
-define('BOT_SETTLERS_FORUM', 'Settlers');
-define('BOT_REPORTS_FORUM', 'Reports');
-define('BOT_BLACK_FORUM', 'BlackBook');
-define('BOT_SURVEY_FORUM', 'Survey');
+// EN forums
+define('BOT_STATISTICS_FORUM',  'Stats');
+define('BOT_SETTLERS_FORUM',    'Settlers');
+define('BOT_REPORTS_FORUM',     'Reports');
+define('BOT_BLACK_FORUM',       'BlackBook');
+define('BOT_SURVEY_FORUM',      'Survey');
+define('BOT_EXTENSION_FORUM',   'Tools');
+// DE forums
+/*
+define('BOT_STATISTICS_FORUM',  'Statistik');
+define('BOT_SETTLERS_FORUM',    'Siedlungen');
+define('BOT_REPORTS_FORUM',     'Berichte');
+define('BOT_BLACK_FORUM',       'Schwarzbuch');
+define('BOT_SURVEY_FORUM',      'Abstimmung');
+define('BOT_EXTENSION_FORUM',   'Tools');
+*/
 // log and directory settings
-define('BOT_PATH',((CLI) ? $_SERVER["PWD"] : $_SERVER["DOCUMENT_ROOT"]).'/');
-define('LOG_PATH',BOT_PATH.'logs/');
-define('LOG_FILE',LOG_PATH.'log.txt');
-define('PERM_DATA',BOT_PATH.'perm_data/');
-define('DOKU_DATA',BOT_PATH.'doku_data/');
-define('FNC_DATA',BOT_PATH.'bot_functions/');
+define('BOT_PATH',((CLI) ? $_SERVER['PWD'] : $_SERVER['DOCUMENT_ROOT']).DIRECTORY_SEPARATOR);
+define('LOG_PATH', BOT_PATH.'logs'.DIRECTORY_SEPARATOR);
+define('LOG_FILE', LOG_PATH.'log.txt');
+define('PERM_DATA', BOT_PATH.'perm_data'.DIRECTORY_SEPARATOR);
+define('DOKU_DATA', BOT_PATH.'doku_data'.DIRECTORY_SEPARATOR);
+define('FNC_DATA', BOT_PATH.'bot_functions'.DIRECTORY_SEPARATOR);
+define('BACK_DATA', BOT_PATH.'backup_data'.DIRECTORY_SEPARATOR);
 // lock
 define('LOCK_FILE', BOT_PATH.str_replace('.php', '.lock', $_SERVER['PHP_SELF']));
 // shorthands
@@ -151,12 +168,12 @@ define('SMS_ALERT_OWN',  1);
 define('SMS_ALERT_ALL',  2);
 define('SMS_SHARE_OFF',  0);
 define('SMS_SHARE_ON',   1);
-define('SMS_STATUS_OPEN', 'OPEN');
-define('SMS_STATUS_DELIVERED', 'DELIVERED');
-define('SMS_STATUS_TRANSMITTED', 'TRANSMITTED');
-define('SMS_STATUS_BUFFERED', 'BUFFERED');
+define('SMS_STATUS_OPEN',         'OPEN');
+define('SMS_STATUS_DELIVERED',    'DELIVERED');
+define('SMS_STATUS_TRANSMITTED',  'TRANSMITTED');
+define('SMS_STATUS_BUFFERED',     'BUFFERED');
 define('SMS_STATUS_NOT_DELIVERED','NOT_DELIVERED');
-define('SMS_STATUS_ANSWERED', 'ANSWERED');
+define('SMS_STATUS_ANSWERED',     'ANSWERED');
 // email
 define('EMAIL_LOG_FILE', LOG_PATH.'email.txt');
 define('EMAIL_SPAMTTL', 30);
