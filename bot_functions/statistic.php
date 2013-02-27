@@ -40,7 +40,7 @@ function ($bot, $data) {
         $military_key = "military";
         $else_key = "else";
         $settler_key = "settler";
-        $military_chars = 2900; 
+        $military_chars = 2900;
         $str_time = (string)time();
         $bot->log("Fork: " . $_this->getName() .": start");
         foreach ($continents as $continent) {
@@ -106,7 +106,7 @@ function ($bot, $data) {
                 $alliance[$k] = array($k,$val[0],$val[1]);
               }
               $sum_ts_string = preg_replace("/(?<=\d)(?=(\d{3})+(?!\d))/", ".", $sum_ts);
-                           
+
               // ** Ally Castles
               // ** create and/or edit
               // new first post = residents
@@ -134,18 +134,18 @@ $post_residents[4] = "
   [b][u]{$bot->ally_shortname} Warlords auf dem Kontinent:[/u] {$thread_name}[/b]
   ".((!empty($warlords)) ? "[spieler]".implode('[/spieler]; [spieler]', $warlords)."[/spieler]" : "[i]kein Warlord[/i]")."
   ";
-              
-              
+
+
               // ** create and/or edit
               // new second post = offence
-              
+
 // post txt
 $post_topten = "[b][u]Top Off-TS auf dem Kontinent:[/u] {$thread_name} ({$sum_ts_string} TS)[/b]";
 /*
 ".((!empty($off_entrys)) ? implode("
 ", $off_entrys) : "[i]keine TS[/i]").'
 
-';*/              
+';*/
               // ** military top ten defence
               $defence = $redis->HGETALL("{$continent_key}:defence");
               $sum_ts = 0;
@@ -158,7 +158,7 @@ $post_topten = "[b][u]Top Off-TS auf dem Kontinent:[/u] {$thread_name} ({$sum_ts
                 $sum_ts += $val[0];
               }
               $sum_ts_string = preg_replace("/(?<=\d)(?=(\d{3})+(?!\d))/", ".", $sum_ts);
-              
+
               // ** create and/or edit
               // new seond post = defence
 // post txt
@@ -171,7 +171,7 @@ $post_topten_deff = "[b][u]Top Deff-TS auf dem Kontinent:[/u] {$thread_name} ({$
               // ** forum
               $post = array();
               $_post_id = 0;
-              
+
               for($i = 0, $size = count($post_residents); $i < $size; ++$i) {
                 if ((strlen($post_residents[$i]) > $military_chars) || empty($post_residents[$i + 1]) || (strlen($post_residents[$i] . $post_residents[$i + 1]) > $military_chars)) {
                   if (strlen($post_residents[$i]) > $military_chars) {
@@ -186,10 +186,10 @@ $post_topten_deff = "[b][u]Top Deff-TS auf dem Kontinent:[/u] {$thread_name} ({$
                   $post_residents[$i + 1] = $post_residents[$i] . $post_residents[$i + 1];
                 }
               }
-              
+
               $post[$_post_id ++] = $post_topten;
               $post[$_post_id ++] = $post_topten_deff;
-              
+
               if (!empty($ally_castle_user)) foreach($ally_castle_user as $_ally => $_ally_castle_user) {
                 // ** Castles
                 // ** create and/or edit
@@ -234,8 +234,8 @@ Städte: (".((!empty($pcities[$_ally])) ? $pcities[$_ally] : 0).")
               // new last post = update
               // post txt
               $post_update = "[u]letztes Update:[/u] [i]" . date('d.m.Y H:i:s', $str_time) . "[/i] | [u]Datenbank:[/u] [i]" . date('d.m.Y H:i:s', $last_update) . "[/i]";
-        
-              // ** forum            
+
+              // ** forum
               foreach ($post as $_post_id_post => $_post) {
                 if ($_id = $bot->forum->get_thread_post_id_by_num($forum_id, $thread_id, $_post_id_post)) {
                   if (!$bot->forum->edit_alliance_forum_post($forum_id, $thread_id, $_id, $_post)) {
@@ -290,7 +290,7 @@ Städte: (".((!empty($pcities[$_ally])) ? $pcities[$_ally] : 0).")
           }
         }
         exit($error);
-      }; 
+      };
       $thread->start($thread, $bot, $c_continents, $forum_id);
       $bot->debug("Started " . $thread->getName() . " with PID " . $thread->getPid() . "...");
       array_push($executeThread, $thread);
@@ -319,10 +319,10 @@ function ($bot, $data) {
   if ($bot->is_ally_user($data['user'])) {
     if (!empty($data['params'][0])) {
       $nick = $bot->get_nick($data['params'][0]);
-      if ($nick) $message = "[url]".STATS_URL."/player.php?name={$nick}[/url]";
+      if ($nick) $message = "[url]".sprintf(STATS_URL, $nick)."[/url]";
       else $message = "[i]{$data['params'][0]}[/i] kenn ich nicht!";
     }
-    else $message = "[url]".STATS_URL."/player.php?name={$data['user']}[/url]";
+    else $message = "[url]".sprintf(STATS_URL, $data['user'])."[/url]";
     if ($data["channel"] == ALLYIN) {
       $bot->add_allymsg($message);
     } else {
@@ -342,7 +342,7 @@ function ($bot, $data) {
     $continents = $redis->SMEMBERS("continents");
     $alliance_key = "alliance:{$bot->ally_id}";
     $military_key = "military";
-    
+
     if (!($forum_id = $redis->GET("{$military_key}:{$alliance_key}:forum:id"))) {
       $forum_id = $bot->forum->get_forum_id_by_name(BOT_STATISTICS_FORUM);
     } else $redis->DEL("{$military_key}:{$alliance_key}:forum:id");

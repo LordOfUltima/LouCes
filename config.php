@@ -31,7 +31,7 @@ define('ELSE_SPIO_URL', '');
 // ignore
 define('IGNORE_PUNISHTTL', 3600);
 // stats
-define('STATS_URL', 'stats.localhost');
+define('STATS_URL', 'stats.localhost/player.php?name=%s');
 // alice
 define('ALICETTL', 3);
 define('ALICEID', 'youralice_id'); // need an published alicebot id
@@ -192,20 +192,20 @@ define('EMAIL_STATUS_TRANSMITTED',  'TRANSMITTED');
 define('EMAIL_STATUS_BUFFERED',     'BUFFERED');
 define('EMAIL_STATUS_ANSWERED',     'ANSWERED');
 // read argv
-function arguments($argv) { 
+function arguments($argv) {
   $ARG = array();
-  if(is_array($argv)) foreach ($argv as $arg) { 
-    if (strpos($arg, '--') === 0) { 
-      $compspec = explode('=', $arg); 
-      $key = str_replace('--', '', array_shift($compspec)); 
-      $value = join('=', $compspec); 
-      $ARG[$key] = $value; 
-    } elseif (strpos($arg, '-') === 0) { 
-      $key = str_replace('-', '', $arg); 
-      if (!isset($ARG[$key])) $ARG[$key] = true; 
-    } 
-  } 
-  return new ArrayObject($ARG, ArrayObject::ARRAY_AS_PROPS); 
+  if(is_array($argv)) foreach ($argv as $arg) {
+    if (strpos($arg, '--') === 0) {
+      $compspec = explode('=', $arg);
+      $key = str_replace('--', '', array_shift($compspec));
+      $value = join('=', $compspec);
+      $ARG[$key] = $value;
+    } elseif (strpos($arg, '-') === 0) {
+      $key = str_replace('-', '', $arg);
+      if (!isset($ARG[$key])) $ARG[$key] = true;
+    }
+  }
+  return new ArrayObject($ARG, ArrayObject::ARRAY_AS_PROPS);
 }
 $_ARG = arguments($argv);
 $_GAMEDATA = new ArrayObject(json_decode(file_get_contents(PERM_DATA . 'game.data.min.' . BOT_LANG), true), ArrayObject::ARRAY_AS_PROPS);
