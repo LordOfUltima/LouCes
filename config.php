@@ -4,17 +4,58 @@ error_reporting(E_ALL ^ E_NOTICE);
 // determine enviroment
 define('CLI', (bool) defined('STDIN'));
 // configuration
-define('BOT_EMAIL',     'your@email.com');
-define('BOT_PASSWORD',  'yourpassword');
-define('BOT_OWNER',     'YourInGameNick');
-define('BOT_SERVER',    'http://prodgameyx.lordofultima.com/123/'); // your world server!
-define('BOT_LANG',      'de'); // your prefered language for login
-// prefix for commands to the bot
-define('PRE','!');
-// time settings
-date_default_timezone_set("Europe/Berlin"); // server default timezone
-setlocale(LC_TIME, "de_DE");
-setlocale(LC_ALL, 'de_DE@euro', 'de_DE', 'de', 'ge');
+
+if(file_exists(__DIR__.'/config.local.php'))
+{
+	// Load a local configuration file.
+	include __DIR__.'/config.local.php';
+}
+else
+{
+	// configuration
+	define('BOT_EMAIL', 'your@email.com');
+	define('BOT_PASSWORD', 'yourpassword');
+	define('BOT_OWNER', 'YourInGameNick');
+	define('BOT_SERVER', 'http://prodgameXX.lordofultima.com/XXX/');
+	define('BOT_LANG','de'); // your prefered language for login
+	// prefix for commands to the bot
+	define('PRE','!');
+	// time settings
+	date_default_timezone_set("Europe/Berlin"); // server default timezone
+	setlocale(LC_TIME, "de_DE");
+	setlocale(LC_ALL, 'de_DE@euro', 'de_DE', 'de', 'ge');
+	//
+	// after this, no changes needed!
+	// edit: for the first run....
+	//
+	// stats
+	define('STATS_URL', 'stats.localhost/player.php?name=%s');
+
+	// alice
+	define('ALICETTL', 3);
+	define('ALICEID', 'youralice_id'); // need an published alicebot id
+
+	// server pain barrier
+	// IMPORTANT: lower this value if LoU gets kicked =;)
+	define('MAX_PARALLEL_REQUESTS', 16);
+
+	// redis database
+	define('REDIS_CONNECTION', ((CLI) ? '/var/run/redis/redis.sock' : '127.0.0.1')); // localhost or socket
+	#define('REDIS_CONNECTION', '127.0.0.1'); // localhost only
+	define('REDIS_NAMESPACE', 'lou:'); // use custom prefix on all keys
+	define('REDIS_DB', 1);
+	define('REDIS_LOG_FILE', LOG_PATH.'redis.txt');
+
+	// mysql database
+	#define('MYSQL_CONNECTION', 'localhost'); // localhost only
+	#define('MYSQL_CONNECTION', ((CLI) ? ':/var/run/mysqld/mysqld.sock' : '127.0.0.1')); // localhost or socket
+	#define('MYSQL_DB', 'lou');
+	#define('MYSQL_USER', 'lou-bot');
+	#define('MYSQL_PWD', '');
+}
+
+// OK, maybe no further changes needed from here on....
+
 //
 // after this, no changes needed!
 //
@@ -30,17 +71,11 @@ define('EXTENSION_KEY', '');
 define('ELSE_SPIO_URL', '');
 // ignore
 define('IGNORE_PUNISHTTL', 3600);
-// stats
-define('STATS_URL', 'stats.localhost/player.php?name=%s');
-// alice
-define('ALICETTL', 3);
-define('ALICEID', 'youralice_id'); // need an published alicebot id
 // global chat
 define('GLOBALCHAT', false);
 // fork
 define('MAXCHILDS', 8);
-// server pain barrier
-define('MAX_PARALLEL_REQUESTS', 16);
+
 // EN forums
 define('BOT_STATISTICS_FORUM',  'Stats');
 define('BOT_SETTLERS_FORUM',    'Settlers');
@@ -134,18 +169,7 @@ define('CITY_STATE', '0');
 define('CASTLE_STATE', '1');
 define('PALACE_STATE', '2');
 define('WATER_STATE', '1');
-// redis database
-define('REDIS_CONNECTION', ((CLI) ? '/var/run/redis/redis.sock' : '127.0.0.1')); // localhost or socket
-#define('REDIS_CONNECTION', '127.0.0.1'); // localhost only
-define('REDIS_NAMESPACE', 'lou:'); // use custom prefix on all keys
-define('REDIS_DB', 1);
-define('REDIS_LOG_FILE', LOG_PATH.'redis.txt');
-// mysql database
-#define('MYSQL_CONNECTION', 'localhost'); // localhost only
-#define('MYSQL_CONNECTION', ((CLI) ? ':/var/run/mysqld/mysqld.sock' : '127.0.0.1')); // localhost or socket
-#define('MYSQL_DB', 'lou');
-#define('MYSQL_USER', 'lou-bot');
-#define('MYSQL_PWD', '');
+
 // rights
 define('ALLOW_SYS',  1);
 define('ALLOW_LEAD', 1+2+4);
