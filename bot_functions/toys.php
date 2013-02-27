@@ -651,4 +651,14 @@ $bot->add_allymsg_hook("morgen", // command key
       $bot->add_allymsg('morgen du Sack.');
     }
 }, 'toys');
+
+$bot->add_allymsg_hook("morgen2", // command key
+	"LouBot_morgen_saeue", // callback function
+	false, // is a command PRE needet?
+	'/^morgen ihr säue$/i', // optional regex for key
+	function ($bot, $data) {
+		if(!$bot->is_himself($data['user'])) {
+			$bot->add_allymsg('morgen du Sau.');
+		}
+	}, 'toys');
 ?>
