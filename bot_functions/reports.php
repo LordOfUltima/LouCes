@@ -5,25 +5,25 @@ $bot->add_category('reports', array(), PUBLICY);
 $bot->add_thread_event(Cron::TICK10,                     // Cron key
                     "GetAllianceReportUpdate",           // command key
                     "LouBot_report_city_update_thread",  // callback function
-function ($_this, $bot, $data) {
+function ($bot, $data) {
   $redis = RedisWrapper::getInstance();
   if (!$redis->status()) return;
   $alliance_key = "alliance:{$bot->ally_id}";
   $redis->SADD("stats:{$alliance_key}:AllianceReportUpdate", (string)time());
   $members = $redis->SMEMBERS("{$alliance_key}:member");
   if (is_array($members)) foreach ($members as $member) {
-    $_this->setAlive();
+    //$_this->setAlive();
     $user_id = $redis->hget("users", $member);
     $cities = $redis->SMEMBERS("user:{$user_id}:cities");
     if (is_array($cities)) foreach ($cities as $city) {
       $city_id = $redis->hget("cities", $city);
       //only castles
-      //if ($redis->hget("city:{$city_id}:data", 'state') >= 1) 
+      //if ($redis->hget("city:{$city_id}:data", 'state') >= 1)
         $count = $redis->ZCARD("city:{$city_id}:{$alliance_key}:reports");
       $bot->lou->get_city_reports($city_id, $count);
-    }    
+    }
   }
-  $bot->debug("Stopped " . posix_getpid() . '@'. $_this->getName());
+  $bot->debug("Stopped " . posix_getpid() . '@reports..');//. $_this->getName());
 });
 
 $bot->add_tick_event(Cron::TICK5,                // Cron key
@@ -32,15 +32,15 @@ $bot->add_tick_event(Cron::TICK5,                // Cron key
 function ($bot, $data) {
   global $redis, $_GAMEDATA;
   if (!$redis->status()) return;
-  $redis->SADD("stats:{$alliance_key}:ReportUpdate", (string)time());
-  $continents = $redis->SMEMBERS("continents");
-  $alliance_key = "alliance:{$bot->ally_id}";
+	$alliance_key = "alliance:{$bot->ally_id}";
+	$redis->SADD("stats:{$alliance_key}:ReportUpdate", (string)time());
+	$continents = $redis->SMEMBERS("continents");
   $reports_key = "reports";
   if (!($forum_id = $redis->GET("{$reports_key}:{$alliance_key}:forum:id"))) {
     $forum_id = $bot->forum->get_forum_id_by_name(BOT_REPORTS_FORUM, true);
     $redis->SET("{$reports_key}:{$alliance_key}:forum:id", $forum_id);
   }
-  
+
   sort($continents);
   if (is_array($continents) && $bot->forum->exist_forum_id($forum_id)) {
 #  if (is_array($continents) && $forum_id) {
@@ -56,10 +56,10 @@ function ($bot, $data) {
         // working child
         $error = 0;
         $redis = RedisWrapper::getInstance();
+        $alliance_key = "alliance:{$bot->ally_id}";
         $last_update = $redis->SMEMBERS("stats:{$alliance_key}:AllianceReportUpdate");
         sort($last_update);
         $last_update = end($last_update);
-        $alliance_key = "alliance:{$bot->ally_id}";
         $reports_key = "reports";
         $reports_chunks = 10;
         $max_reports = 10;
@@ -81,7 +81,7 @@ function ($bot, $data) {
             $reports_pattern = "{$alliance_key}:{$continent_key}:reports";
 #            if ($thread_id) {
             if ($bot->forum->exist_forum_thread_id($forum_id, $thread_id)) {
-              
+
               // ** daily
               $daily = array();
               $_start = mktime(0, 0, 0, date("n"), date("j"), date("Y"));
@@ -95,10 +95,10 @@ function ($bot, $data) {
                 $_forum_text = str_replace($_header['opponent_name'], "[spieler]{$_header['opponent_name']}[/spieler]" . $_opponent_alliance  , $_header['report_text']);
                 $_forum_text = str_replace("{$_header['name']}:", ''  , $_forum_text);
                 /* DE
-                Überfall 
+                Überfall
                 Ausspioniert
                 Unterstützung
-                Belagerung 
+                Belagerung
                 Plünderung
                 */
                 if (strstr($_forum_text, $_GAMEDATA->translations['tnf:assault'])) $_img = '♗';
@@ -147,7 +147,7 @@ $post_daily_footer = "
               // ** forum
               $post = array();
               $_post_id = 0;
-              
+
               foreach($post_daily as $_post_daily) {
                 $post[$_post_id ++] = $_post_daily;
               }
@@ -165,10 +165,10 @@ $post_daily_footer = "
                 $_forum_text = str_replace($_header['opponent_name'], "[spieler]{$_header['opponent_name']}[/spieler]" . $_opponent_alliance  , $_header['report_text']);
                 $_forum_text = str_replace("{$_header['name']}:", ''  , $_forum_text);
                 /* DE
-                Überfall 
+                Überfall
                 Ausspioniert
                 Unterstützung
-                Belagerung 
+                Belagerung
                 Plünderung
                 */
                 if (strstr($_forum_text, $_GAMEDATA->translations['tnf:assault'])) $_img = '♗';
@@ -226,8 +226,8 @@ $post_update = "[u]{$_GAMEDATA->translations['tnf:worldmap legend']}[/u]:
      ♚ - [i]{$_GAMEDATA->translations['tnf:siege']}[/i]
      ♙ - [i]{$_GAMEDATA->translations['tnf:plunder']}[/i]
 ";
-          
-              // ** forum            
+
+              // ** forum
               foreach ($post as $_post_id_post => $_post) {
                 if ($_id = $bot->forum->get_thread_post_id_by_num($forum_id, $thread_id, $_post_id_post)) {
                   if (!$bot->forum->edit_alliance_forum_post($forum_id, $thread_id, $_id, $_post)) {
@@ -286,7 +286,7 @@ $post_update = "[u]{$_GAMEDATA->translations['tnf:worldmap legend']}[/u]:
       $thread->start($thread, $bot, $c_continents, $forum_id);
       $bot->debug("Started " . $thread->getName() . " with PID " . $thread->getPid() . "...");
       array_push($executeThread, $thread);
-    }  
+    }
     foreach($executeThread as $thread) {
       pcntl_waitpid($thread->getPid(), $status, WUNTRACED);
       $bot->debug("Stopped " . $thread->getPid() . '@'. $thread->getName() . (!pcntl_wifexited($status) ? ' with' : ' without') . " errors!");
@@ -294,8 +294,8 @@ $post_update = "[u]{$_GAMEDATA->translations['tnf:worldmap legend']}[/u]:
     }
     $bot->log("Fork: closing, all childs done!");
     unset($executeThread);
-    $redis->reInstance();  
-  } else { 
+    $redis->reInstance();
+  } else {
     $bot->log("Reports error: no forum '" . BOT_REPORTS_FORUM . "'");
     $redis->DEL("{$reports_key}:{$alliance_key}:forum:id");
   }
@@ -313,7 +313,7 @@ function ($bot, $data) {
     $continents = $redis->SMEMBERS("continents");
     $alliance_key = "alliance:{$bot->ally_id}";
     $reports_key = "reports";
-    
+
     if (!($forum_id = $redis->GET("{$reports_key}:{$alliance_key}:forum:id"))) {
       $forum_id = $bot->forum->get_forum_id_by_name(BOT_REPORTS_FORUM);
     } else $redis->DEL("{$reports_key}:{$alliance_key}:forum:id");
